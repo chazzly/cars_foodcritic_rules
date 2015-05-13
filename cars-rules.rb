@@ -44,3 +44,21 @@ rule 'CARS003', 'OS Support not specified.' do
     end
   end
 end
+
+rule 'CARS004', 'Invalid data bag JSON' do
+  ## This is stolen entirely from john-karp and his pending pull request
+  ## https://github.com/acrmp/foodcritic/pull/270
+  require 'json'
+  tags %w(correctness files)
+  cookbook do |dir|
+    Dir[File.join(dir, 'data_bags', '*', '*.json')].reject do |file|
+      begin
+        contents = File.open(file, 'rb').read
+        bag = JSON.parse(contents)
+        bag.fetch('id', nil) == File.basename(file, '.json')
+      rescue JSON::ParserError
+        false
+      end
+    end.map { |file| file_match(file) }
+  end
+end
