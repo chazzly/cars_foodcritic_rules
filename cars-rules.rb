@@ -37,7 +37,7 @@ end
 rule 'CARS003', 'OS Support not specified.' do
   tags %w{metadata os}
   metadata do |ast, filename|
-    #puts "Cars-3 - #{filename} - #{filename.class}"
+    # puts "Cars-3 - #{filename} - #{filename.class}"
     support_list = ast.xpath('//command[ident/@value="supports"]') 
     if support_list.empty?
       [	file_match(filename) ]
@@ -60,5 +60,27 @@ rule 'CARS004', 'Invalid data bag JSON' do
         false
       end
     end.map { |file| file_match(file) }
+  end
+end
+
+rule 'CARS005', 'Metadata depends does specify version constraint' do
+  tags %w{metadata}
+  line = 1
+  v_missing = false
+  cookbook do |cb|
+    metapath = File.join(cb, 'metadata.rb')
+    f=open(metapath)
+    while mline=f.gets
+      if mline.include?('depends')
+        deps = mline.split
+        if deps.length != 3
+          v_missing = true
+          noln = $.
+        end
+      end
+    end
+    if v_missing
+      [ {:filename=>metapath, :matched=>metapath, :line=>noln, :column=>1 } ]
+    end
   end
 end
