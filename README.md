@@ -20,3 +20,14 @@ A companion to [CINK001](https://github.com/customink-webops/foodcritic-rules), 
 
 ## CARS003 - OS Support not specified
 This simply checks that a supports entry is made in metadata.rb.  The idea being that in an environment of multiple platforms it is helpful to know which coookbooks have been designed for and tested with which platforms.
+
+## CARS004 - Invalid data bag JSON
+This is stolen entirely from john-karp and his pending pull request
+https://github.com/acrmp/foodcritic/pull/270
+
+## CARS005 - Metadata depends does specify version constraint
+Checks that each 'depends' entry in metadata.rb includes a version constraint
+
+## CARS006 - Valid Cookbook version is not defined
+Checks that metadata.rb contains a valid entry for verion based on the syntax requirements
+defined https://docs.chef.io/cookbook_versions.html
