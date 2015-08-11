@@ -65,7 +65,6 @@ end
 
 rule 'CARS005', 'Metadata depends does specify version constraint' do
   tags %w{metadata}
-  line = 1
   v_missing = false
   cookbook do |cb|
     metapath = File.join(cb, 'metadata.rb')
@@ -75,12 +74,45 @@ rule 'CARS005', 'Metadata depends does specify version constraint' do
         deps = mline.split
         if deps.length != 3
           v_missing = true
-          noln = $.
+          lnno = $.
         end
       end
     end
     if v_missing
-      [ {:filename=>metapath, :matched=>metapath, :line=>noln, :column=>1 } ]
+      [ {:filename=>metapath, :matched=>metapath, :line=>lnno, :column=>1 } ]
+    end
+  end
+end
+
+rule 'CARS006', 'Valid Cookbook version is not defined' do
+  tags %w{metadata}
+  cookbook do |cb|
+    v_missing = true
+    pass = true
+    noln = 0
+    metafile = File.join(cb, 'metadata.rb')
+    f=open(metafile)
+    while mline=f.gets
+      if mline.include?('version')
+        lnno = $.
+        vers = mline.split
+        if vers.length > 1
+          parts = vers[1].gsub(/\s|'|"/, '').split('.')
+          if parts.length > 1
+            parts.each do |p|
+              if !/\A\d+\z/.match(p)
+                pass = false
+              end
+            end
+            if pass
+              v_missing = false
+            end
+          end
+        end
+      end
+    end
+    if v_missing
+      [ {:filename=>metafile, :matched=>metafile, :line=>lnno, :column=>1 } ]
     end
   end
 end
