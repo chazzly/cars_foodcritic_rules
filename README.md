@@ -31,3 +31,8 @@ Checks that each 'depends' entry in metadata.rb includes a version constraint
 ## CARS006 - Valid Cookbook version is not defined
 Checks that metadata.rb contains a valid entry for verion based on the syntax requirements
 defined https://docs.chef.io/cookbook_versions.html
+
+## CARS007 - file mode not specified as string.
+Checks the the mode property on file resources (templates, cookbook,remote, etc) is specified as a string, not a number.
+Numbers with a leading zero are interperated  by ruby as an ocatal, which gives a different result than a number without a leading zero
+(interprated as an integer).  Ensuring they are specified as a string avoids this confusion and ensure Chef interprates the mode as expected.

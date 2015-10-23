@@ -116,3 +116,10 @@ rule 'CARS006', 'Valid Cookbook version is not defined' do
     end
   end
 end
+
+rule 'CARS007', 'File mode not specified as a string.' do
+  tags %w{recipe, correctness,files}
+  cookbook do |cb|
+     
+end
+
