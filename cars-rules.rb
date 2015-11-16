@@ -119,7 +119,12 @@ end
 
 rule 'CARS007', 'File mode not specified as a string.' do
   tags %w{recipe, correctness,files}
-  cookbook do |cb|
+  recipe do |recp|
+    pres = find_resources(recp, :type => 'remote_file').find_all do |cmd|
+      condition = Nokogiri::XML(cmd.to_xml).xpath('//ident[@value="only_if" or @value="not_if"][parent::fcall or parent::command or ancestor::if]')
+      condition.empty?
+    end.map{|cmd| match(cmd)}
+  end
      
 end
 
