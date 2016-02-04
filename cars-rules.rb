@@ -84,47 +84,18 @@ rule 'CARS005', 'Metadata depends does specify version constraint' do
   end
 end
 
-rule 'CARS006', 'Valid Cookbook version is not defined' do
-  tags %w{metadata}
-  cookbook do |cb|
-    v_missing = true
-    pass = true
-    noln = 0
-    metafile = File.join(cb, 'metadata.rb')
-    f=open(metafile)
-    while mline=f.gets
-      if mline.include?('version')
-        lnno = $.
-        vers = mline.split
-        if vers.length > 1
-          parts = vers[1].gsub(/\s|'|"/, '').split('.')
-          if parts.length > 1
-            parts.each do |p|
-              if !/\A\d+\z/.match(p)
-                pass = false
-              end
-            end
-            if pass
-              v_missing = false
-            end
-          end
-        end
-      end
-    end
-    if v_missing
-      [ {:filename=>metafile, :matched=>metafile, :line=>lnno, :column=>1 } ]
-    end
-  end
-end
+## Removing CARS006 in favor of FC061 & FC062 which cover this more cleanly
 
 rule 'CARS007', 'File mode not specified as a string.' do
   tags %w{recipe, correctness,files}
   recipe do |recp|
-    pres = find_resources(recp, :type => 'remote_file').find_all do |cmd|
-      condition = Nokogiri::XML(cmd.to_xml).xpath('//ident[@value="only_if" or @value="not_if"][parent::fcall or parent::command or ancestor::if]')
-      condition.empty?
-    end.map{|cmd| match(cmd)}
+    # %w{remote_file file cookbook_file template}.each do |type|
+      pres = find_resources(recp, :type => 'file').find_all do |cmd|
+        condition = Nokogiri::XML(cmd.to_xml).xpath('//ident[@value="mode"][parent::fcall or parent::command or ancestor::if]')
+        require 'pry';binding.pry
+        condition.empty?
+      end.map{|cmd| match(cmd)}
+    #end
   end
-     
 end
 
