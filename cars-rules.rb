@@ -88,6 +88,7 @@ end
 
 rule 'CARS007', 'File mode not specified as a string.' do
   tags %w{recipe, correctness,files}
+  # TODO: Skip if action is Delete
   recipe do |recp|
     # %w{remote_file file cookbook_file template}.each do |type|
       pres = find_resources(recp, :type => 'file').find_all do |cmd|
